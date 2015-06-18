@@ -6,6 +6,8 @@ See <a href="https://github.com/lenonmauer/tableFilter/tree/master/examples/">ex
 <pre>
 	<code>
 		$(document).ready(function() {
+		
+			/* The filter is triggered when keyup is triggered on input[type=search] */
 
 			$('table[name=example-table]').tableFilter({
 			
@@ -20,7 +22,7 @@ See <a href="https://github.com/lenonmauer/tableFilter/tree/master/examples/">ex
 					event 	: "keyup",
 				},
 
-				sort : true,
+				sort : true, /* Add sort function */
 				
 				//trCount : true, 
 				
@@ -28,9 +30,9 @@ See <a href="https://github.com/lenonmauer/tableFilter/tree/master/examples/">ex
 				
 				//trim      :  true,
 
-				callback : function() { /* Callback após o filtro */
+				callback : function() {
 				
-					console.log("filtering ...");
+					//console.log("filtering ...");
 				}
 				
 			});
