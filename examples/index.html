@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="../ext/css/bootstrap.min.css">
+		<script type="text/javascript" src="../ext/js/jquery.min.js"></script>
+		<script src="../dist/tablefilter.js"></script>
+	</head>
+	
+	<body>
+	
+		<script>
+			$(document).ready(function() {
+
+				$('table[name=example-table]').tableFilter({
+				
+					input : {
+					
+						create 		: false,
+						selector 	: "input[type=search]"
+					},
+					
+					trigger : {
+					
+						event 	: "click",
+						element : "button[name=btn-filtro]"
+					},
+
+					sort : true,
+					
+					trCount : true, 
+					
+					caseSensitive : false,
+					
+					trim      :  true,
+
+					callback : function() { /* Callback após o filtro */
+					
+						console.log("filtering ...");
+					}
+					
+				});
+			});
+		</script>
+	
+		<div class="container">
+			
+			<div class="page-header text-center">
+				<h3>jQuery Table Filter</h3>
+			</div>
+		
+			<div class="row">
+				<div class="col-md-10">
+					<input type="search" class="form-control" placeholder="Filtrar por ...">
+				</div>
+				
+				<div class="col-md-2">
+					<button type="button" class="btn btn-primary btn-block" name="btn-filtro">Filtrar</button>
+				</div>
+			</div>
+			
+			<hr>
+			
+			<div class="row">
+			
+				<div class="col-md-12">
+
+					<table name="example-table" class="table table-bordered table-striped">
+
+						<thead>
+							<tr>
+								<th data-tsort-type="number">Numbers</th>
+								<th data-tsort-type="date-br">Date BR</th>
+								<th data-tsort-type="date">Date</th>
+								<th>Text</th>
+								<th data-tsort="disabled">Sort Disabled</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<tr>
+								<td>3</td>
+								<td>12/04/2015 00:00:00</td>
+								<td>2015-04-12 00:00:00</td>
+								<td>Test</td>
+								<td>tr1</td>
+							</tr>
+							
+							<tr>
+								<td>2</td>
+								<td>12/04/2015</td>
+								<td>2015-04-12</td>
+								<td>table</td>
+								<td>tR2</td>
+							</tr>
+							
+							<tr>
+								<td>5</td>
+								<td>12/04/2015 08:56:00</td>
+								<td>2015-04-12 08:56:00</td>
+								<td>filter</td>
+								<td>tr3</td>
+							</tr>
+							
+							<tr>
+								<td>-3</td>
+								<td>15/04/2015 08:56:00</td>
+								<td>2015-04-15 08:56:00</td>
+								<td>jQuery</td>
+								<td>tr4</td>
+							</tr>
+						</tbody>
+					
+					</table>
+				
+				</div>
+			
+			</div>
+
+	</body>
+	
+</html>

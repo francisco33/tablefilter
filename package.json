@@ -1,0 +1,19 @@
+{
+  "name": "tablefilter",
+  "description": "jQuery plugin for filter and sort tables",
+  "keywords": [
+    "zbox",
+    "lightbox"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lenonmauer/tableFilter.git"
+  },
+  "author": {
+    "name": "Lenon Mauer.",
+  },
+  
+  "version": "1.1",
+  
+  "main": "dist/tablefilter.js"
+}
