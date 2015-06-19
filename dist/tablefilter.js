@@ -189,15 +189,18 @@
 			switch(th.attr("data-tsort-type")){
 				
 				case "number" : text = parseFloat($(this).text().replace(/[,]/g, ".").replace(/[^0-9\.\-]/g, ""));break;
-				case "date" : text = new Date($(this).text()).getTime();break;
+				case "date" : try{text = new Date($(this).text()).getTime();}catch(err){text = 0};break;
 				
 				case "date-br" : 
 				
 					if($(this).text().match(/[0-9\/]+[\s]+[0-9]+[:]/g)) //Datetime
 						text = ($(this).text().split(" ")[0].split("/").reverse().join("-"))+($(this).text().split(" ")[1]);
-					else
+					else if($(this).text().match(/[0-9]{2}[\/]{1}[0-9]{2}[\/]{1}[0-9]{4}/g))
 						text = $(this).text().split("/").reverse().join("-");
-				
+					else
+						text = 0;
+					
+					text = new Date(text).getTime();
 					break;
 				
 				default : text = $(this).text().toLowerCase();
