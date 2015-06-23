@@ -108,7 +108,8 @@
 		
 		var textFound;
 		var tdText;
-		var value = $(configs.input.selector).val() || $(configs.input.selector).text();					
+		var value = $(configs.input.selector).val() || $(configs.input.selector).text();
+		var fadeTime = 1;
 
 		if(configs.trim)
 			value = value.trim();
@@ -117,11 +118,14 @@
 			value = value.toLowerCase();
 		
 		if(!value.length) {
-			table.find('tbody tr').length ? table.show().find('tbody tr').show() : table.hide();
+			table.find('tbody tr').length ? table.show(fadeTime).find('tbody tr').show(fadeTime) : table.hide(fadeTime);
+			setTimeout(configs.callback, fadeTime);
 			
 		} else {
 			
-			table.find('tbody tr').each(function() {
+			var count = table.find('tbody tr').length-1;
+			
+			table.find('tbody tr').each(function(ind) {
 			
 				if($(this).find("th").length)
 					return true;
@@ -143,13 +147,14 @@
 				});
 
 				if(!textFound && $(this).is(":visible"))
-					$(this).hide(150);
+					$(this).hide(fadeTime);
 				else if(textFound && $(this).is(":hidden"))
-					$(this).show(150);
+					$(this).show(fadeTime);
+				
+				if(count == ind)
+					setTimeout(configs.callback, fadeTime+30);
 			});
 		}
-		
-		configs.callback.call();
 	}
 	
 	var trCount = function(table) {
