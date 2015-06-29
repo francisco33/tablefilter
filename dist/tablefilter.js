@@ -39,6 +39,8 @@
 					// Compara os valores com trim
 					'trim'      :  false,
 					
+					'timeout'  : 300,
+					
 					'sort'		: false, // Aplica a função de ordenação das linhas
 
 					'caseSensitive'  :  false, // Filtro case sensitive
@@ -52,6 +54,7 @@
 					$.extend(true, configs, settings);
 				
 				var $table = $(this);
+				var $timeout = null;
 				
 				// Define o trigger que vai ser utilizado)
 				
@@ -61,7 +64,7 @@
 					case 'keypress' : break;
 					case 'change'   : break;
 					case 'blur'     : break;
-					default         : configs.trigger.event = 'keyup';
+					default         : configs.trigger.event = 'keypress';
 				}
 				
 				if(configs.input.create)
@@ -80,7 +83,18 @@
 
 				$(configs.trigger.element).bind(configs.trigger.event, function() {
 
-					filterTable.call(undefined, $table, configs);
+					try {
+						
+						clearTimeout($timeout);
+						
+					} catch(err){}
+		
+					$timeout = setTimeout(function(){
+
+						filterTable.call(undefined, $table, configs);
+						
+					}, configs.timeout);
+
 				});
 
 				// Configuração para o sort das tabelas
@@ -105,19 +119,29 @@
 	}
 	
 	var filterTable = function(table, configs) {
-		
+
 		var textFound;
 		var tdText;
-		var value = $(configs.input.selector).val() || $(configs.input.selector).text();
+		var values = $(configs.input.selector).val() || $(configs.input.selector).text();
 		var fadeTime = 1;
+		var toHide = [];
+		var toShow = [];
+		
+		values = values.trim().split(" ");
 
 		if(configs.trim)
-			value = value.trim();
+			values = values.map("trim");
 
 		if(!configs.caseSensitive)
-			value = value.toLowerCase();
+			values = values.map(function(val){return val.toLowerCase();});
 		
-		if(!value.length) {
+		values.map(function(val, index){
+			
+			if(!val.trim().length)
+				values.splice(index, 1);
+		});
+
+		if(!values.length) {
 			table.find('tbody tr').length ? table.show(fadeTime).find('tbody tr').show(fadeTime) : table.hide(fadeTime);
 			setTimeout(configs.callback, fadeTime);
 			
@@ -130,30 +154,49 @@
 				if($(this).find("th").length)
 					return true;
 
-				textFound = false;
-		
+				var textFound = 0;
+				var arrayText = []; // TD texts
+
 				$(this).find('td').each(function() {
 
-					tdText = $(this).text();
-				
-					if(configs.trim)
-						tdText = tdText.trim();
+					var tdText = $(this).clone();
+					tdText.find("a, button").remove();
+					tdText = tdText.text().trim();
+
+					if(!tdText.length)
+						return true;
 					
 					if(!configs.caseSensitive)
 						tdText = tdText.toLowerCase();
-
-					if(tdText.indexOf(value) >= 0)
-						textFound = true;
+					
+					arrayText.push(tdText);
 				});
 
-				if(!textFound && $(this).is(":visible"))
-					$(this).hide(fadeTime);
-				else if(textFound && $(this).is(":hidden"))
-					$(this).show(fadeTime);
+				values.forEach(function(v){
+
+					arrayText.every(function(t){
+
+						if(t.indexOf(v) >= 0) {
+							
+							textFound++;
+							return false;
+						}
 				
-				if(count == ind)
-					setTimeout(configs.callback, fadeTime+30);
+						return true;
+					});
+				});
+
+				textFound = textFound == values.length;
+
+				if(!textFound && $(this).is(":visible"))
+					toHide.push(this);
+				else if(textFound && $(this).is(":hidden"))
+					toShow.push(this);
 			});
+			
+			$(toShow).show(fadeTime);
+			$(toHide).hide(fadeTime);
+			setTimeout(configs.callback, fadeTime+30);
 		}
 	}
 	
