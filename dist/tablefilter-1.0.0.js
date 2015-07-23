@@ -1,7 +1,7 @@
 ﻿/*!
- * jQuery tableFilter Plugin - v1.1
+ * jQuery tableFilter Plugin - v1.0.0
  * Copyright (c) 2014 Lenon Mauer
- * Version: 1.1 (17-JUN-2015)
+ * Version: 1.0.0 (23-JUL-2015)
  * Under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  * Requires: jQuery v1.7.2 or later
@@ -17,36 +17,25 @@
 			
 				var configs = {
 
-					// inputs que vão filtrar as tabelas
-
-					'input' : {
-						// Cria o input de filtro automaticamente
-						create    : true,
-						
-						// Classe do input de filtro
-						selector  : '.searchTableFilter',
-						
-						// CSS o input de filtro automaticamente
-						css     : {}
-					},
+					// input que vãi filtrar as tabelas
+					'input' : '.searchTableFilter',
 
 					'trigger': {
 						
-						"event" 			: "keyup", // Evento que vai chamar o a função de filtro nas tabelas
-						'triggerElement' 	: undefined // Elemento que será aplicado o evento, undefined será o próprio input do filtro
+						"event" 	: "keyup", // Evento que vai chamar o a função de filtro nas tabelas
+						'element' 	: undefined // Elemento que será aplicado o evento, undefined será o próprio input do filtro
 					},
 
-					// Compara os valores com trim
-					'trim'      :  false,
-					
-					'timeout'  : 300,
-					
-					'sort'		: false, // Aplica a função de ordenação das linhas
+					'trim'	: false,
 
-					'caseSensitive'  :  false, // Filtro case sensitive
+					'caseSensitive'	:  false,
 					
-					'trCount'  :  false,  // Aplciar numero de linhas
+					'timeout'	: 300,
 					
+					'sort'	: false, // Aplica a função de ordenação das linhas
+
+					'notFoundElement' : null,
+
 					'callback'	:	function(){}
 				};
 				
@@ -55,33 +44,15 @@
 				
 				var $table = $(this);
 				var $timeout = null;
-				
-				// Define o trigger que vai ser utilizado)
-				
-				switch(configs.trigger.event) {
-					case 'keyup'    : break;
-					case 'click'    : break;
-					case 'keypress' : break;
-					case 'change'   : break;
-					case 'blur'     : break;
-					default         : configs.trigger.event = 'keypress';
-				}
-				
-				if(configs.input.create)
-					$table.before("<input type=\"text\" class=\""+configs.input.selector.replace(".", "")+"\">");
-	
-				for(var index in configs.input.css) //Aplica o css definido nas configs
-					$(configs.input.selector).css(index, configs.input.css[index]);				
-				
+
 				if(configs.trigger.element == undefined)
-					configs.trigger.element = configs.input.selector;
+					configs.trigger.element = $(configs.input);
 					
-				if(!$(configs.trigger.element).length)
+				if(!configs.trigger.element.length)
 					$.error('Trigger element not found.');
 
 				/* Filtro das tabelas */
-
-				$(configs.trigger.element).bind(configs.trigger.event, function() {
+				configs.trigger.element.bind(configs.trigger.event, function() {
 
 					try {
 						
@@ -94,7 +65,6 @@
 						filterTable.call(undefined, $table, configs);
 						
 					}, configs.timeout);
-
 				});
 
 				// Configuração para o sort das tabelas
@@ -109,11 +79,8 @@
 						sort.call(undefined, this)
 					});
 				}
-				
-				// Contador de linhas
-				
-				if(configs.trCount)
-					trCount.call(undefined, $table);
+
+				notFoundMessage($table, configs.notFoundElement);
 			});
 		},
 	}
@@ -122,11 +89,11 @@
 
 		var textFound;
 		var tdText;
-		var values = $(configs.input.selector).val() || $(configs.input.selector).text();
+		var values = $(configs.input).val() || $(configs.input).text();
 		var fadeTime = 1;
 		var toHide = [];
 		var toShow = [];
-		
+
 		values = values.trim().split(" ");
 
 		if(configs.trim)
@@ -134,7 +101,7 @@
 
 		if(!configs.caseSensitive)
 			values = values.map(function(val){return val.toLowerCase();});
-		
+
 		values.map(function(val, index){
 			
 			if(!val.trim().length)
@@ -142,9 +109,9 @@
 		});
 
 		if(!values.length) {
-			table.find('tbody tr').length ? table.show(fadeTime).find('tbody tr').show(fadeTime) : table.hide(fadeTime);
-			setTimeout(configs.callback, fadeTime);
 			
+			toShow = table.find('tbody tr').toArray();
+
 		} else {
 			
 			var count = table.find('tbody tr').length-1;
@@ -157,11 +124,12 @@
 				var textFound = 0;
 				var arrayText = []; // TD texts
 
-				$(this).find('td').each(function() {
+				$(this).find('td:not([data-tfilter=disabled])').each(function() {
 
-					var tdText = $(this).clone();
-					tdText.find("a, button").remove();
-					tdText = tdText.text().trim();
+					if($(this).closest("table").find("thead th:nth-child("+($(this).parent().find("td").index($(this).get(0))+1)+")").attr("data-tfilter") == "disabled")
+						return true;
+
+					var tdText = $(this).text().trim();
 
 					if(!tdText.length)
 						return true;
@@ -193,20 +161,18 @@
 				else if(textFound && $(this).is(":hidden"))
 					toShow.push(this);
 			});
-			
-			$(toShow).show(fadeTime);
-			$(toHide).hide(fadeTime);
-			setTimeout(configs.callback, fadeTime+30);
 		}
-	}
-	
-	var trCount = function(table) {
-		
-		table.find('th').first().before("<th></th>");
 
-		table.find('tbody tr').each(function(i) {
-		
-			$(this).find("td").first().before("<td>"+i+"</td>")
+		if(toShow.length)
+			toShow.push(table.get(0));
+
+		$(toShow).show(fadeTime);
+		$(toHide).hide(fadeTime);
+
+		$(toShow.concat(toHide)).promise().done(function(){
+
+			configs.callback.call();
+			notFoundMessage(table, configs.notFoundElement);
 		});
 	}
 	
@@ -279,6 +245,17 @@
 		for(i=0; i< array.length; i++)
 			$(th).closest("table").find("tbody").append(array[i].obj);
 	}
+
+	var notFoundMessage = function(table, notfound) {
+
+		if(!notfound)
+			return;
+
+		table.find("tbody tr:visible").length ? $(notfound).hide(1) : $(notfound).show(1);
+
+		if(!table.find("tbody tr:visible").length)
+			$(table).hide(1);
+	};
 
 	$.fn.tableFilter = function(method) {
 
