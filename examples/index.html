@@ -2,7 +2,7 @@
 	<head>
 		<link rel="stylesheet" href="../ext/css/bootstrap.min.css">
 		<script type="text/javascript" src="../ext/js/jquery.min.js"></script>
-		<script src="../dist/tablefilter.js"></script>
+		<script src="../dist/tablefilter-1.0.0.js"></script>
 	</head>
 	
 	<body>
@@ -12,11 +12,7 @@
 
 				$('table[name=example-table]').tableFilter({
 				
-					input : {
-					
-						create 		: false,
-						selector 	: "input[type=search]"
-					},
+					//input : "input[type=search]", Default element
 					
 					trigger : {
 					
@@ -25,18 +21,17 @@
 					},
 
 					sort : true,
+
+					//caseSensitive : false, Default
 					
-					trCount : true, 
-					
-					caseSensitive : false,
-					
-					trim      :  true,
+					//trim      :  true, Default
 
 					callback : function() { /* Callback após o filtro */
 					
-						console.log("filtering ...");
-					}
+						console.log("filter ...");
+					},
 					
+					notFoundElement : ".not-found"
 				});
 			});
 		</script>
@@ -105,7 +100,7 @@
 								<td>15/04/2015 08:56:00</td>
 								<td>2015-04-15 08:56:00</td>
 								<td>jQuery</td>
-								<td>tr4</td>
+								<td data-tfilter="disabled">TD filter disabled</td> <!-- It can be added in TH's -->
 							</tr>
 						</tbody>
 					

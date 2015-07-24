@@ -18,7 +18,7 @@
 				var configs = {
 
 					// input que vãi filtrar as tabelas
-					'input' : '.searchTableFilter',
+					'input' : 'input[type=search]',
 
 					'trigger': {
 						
@@ -26,11 +26,11 @@
 						'element' 	: undefined // Elemento que será aplicado o evento, undefined será o próprio input do filtro
 					},
 
-					'trim'	: false,
+					'trim'	: true,
 
 					'caseSensitive'	:  false,
 					
-					'timeout'	: 300,
+					'timeout'	: 5000, // Timeout for keyboard events (keyup, keypress ...)
 					
 					'sort'	: false, // Aplica a função de ordenação das linhas
 
@@ -46,13 +46,18 @@
 				var $timeout = null;
 
 				if(configs.trigger.element == undefined)
-					configs.trigger.element = $(configs.input);
+					configs.trigger.element = configs.input;
 					
 				if(!configs.trigger.element.length)
 					$.error('Trigger element not found.');
 
 				/* Filtro das tabelas */
-				configs.trigger.element.bind(configs.trigger.event, function() {
+				$(configs.trigger.element).bind(configs.trigger.event, function() {
+
+					if(configs.trigger.event.indexOf("key") < 0)
+						configs.timeout = 0;
+
+					console.log(configs.trigger.event);
 
 					try {
 						
@@ -72,15 +77,13 @@
 
 					var ths = $table.find("th:not([data-tsort=disabled])");
 					
-					ths.append("&nbsp;<span class=\"caret\"></span>").attr("data-tsort", "desc");
+					ths.append("<span class=\"caret\"></span>").attr("data-tsort", "desc");
 
 					ths.css("cursor", "pointer").addClass("tfsort").bind("click", function() {
 						
 						sort.call(undefined, this)
 					});
 				}
-
-				notFoundMessage($table, configs.notFoundElement);
 			});
 		},
 	}
@@ -97,7 +100,7 @@
 		values = values.trim().split(" ");
 
 		if(configs.trim)
-			values = values.map("trim");
+			values = values.map(function(v){return v.trim();});
 
 		if(!configs.caseSensitive)
 			values = values.map(function(val){return val.toLowerCase();});
@@ -187,7 +190,7 @@
 		th.filter("[data-tsort=asc]").length ? th.attr("data-tsort", "desc") : th.attr("data-tsort", "asc");
 
 		/* Altera o sentido da ordenação do ícone */
-		th.attr("data-tsort") == "asc" ? $(th).find(".caret").css("transform", "rotate(0deg)") : $(th).find(".caret").css("transform", "rotate(180deg)");
+		th.attr("data-tsort") == "asc" ? $(th).find(".caret").css("transform", "rotate(180deg)") : $(th).find(".caret").css("transform", "rotate(0deg)");
 		
 		/* Copia as linhas para serem ordenadas */
 		tds.each(function(a) {
@@ -208,12 +211,12 @@
 				case "date-br" : 
 				
 					if($(this).text().match(/[0-9\/]+[\s]+[0-9]+[:]/g)) //Datetime
-						text = ($(this).text().split(" ")[0].split("/").reverse().join("-"))+($(this).text().split(" ")[1]);
+						text = ($(this).text().split(" ")[0].split("/").reverse().join("-"))+" "+($(this).text().split(" ")[1]);
 					else if($(this).text().match(/[0-9]{2}[\/]{1}[0-9]{2}[\/]{1}[0-9]{4}/g))
 						text = $(this).text().split("/").reverse().join("-");
 					else
 						text = 0;
-					
+
 					text = new Date(text).getTime();
 					break;
 				
