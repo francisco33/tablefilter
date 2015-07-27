@@ -1,4 +1,4 @@
-﻿﻿# jQuery tableFilter
+﻿# jQuery tablefilter
 Plugin jQuery para filtro e ordenação de linhas de tabelas
 # Examples
 See <a href="https://github.com/lenonmauer/tableFilter/tree/master/examples/">examples</a>.
