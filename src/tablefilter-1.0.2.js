@@ -1,7 +1,7 @@
 ﻿/*!
- * jQuery tableFilter Plugin - v1.0.0
+ * jQuery tablefilter Plugin - v1.0.2
  * Copyright (c) 2014 Lenon Mauer
- * Version: 1.0.0 (23-JUL-2015)
+ * Version: 1.0.2 (23-JUL-2015)
  * Under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  * Requires: jQuery v1.7.2 or later
@@ -91,7 +91,6 @@
 		var textFound;
 		var tdText;
 		var values = $(configs.input).val() || $(configs.input).text();
-		var fadeTime = 1;
 		var toHide = [];
 		var toShow = [];
 
@@ -164,8 +163,8 @@
 		if(toShow.length)
 			toShow.push(table.get(0));
 
-		$(toShow).show(fadeTime);
-		$(toHide).hide(fadeTime);
+		$(toShow).show(0);
+		$(toHide).hide(0);
 
 		$(toShow.concat(toHide)).promise().done(function(){
 
