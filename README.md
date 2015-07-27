@@ -5,28 +5,28 @@ See <a href="https://github.com/lenonmauer/tableFilter/tree/master/examples/">ex
 # Basic Usage
 <pre>
 	<code>
-		$(document).ready(function() {
+	$(document).ready(function() {
 		
-			/* The filter is triggered when keyup is triggered on input[type=search] */
+		/* The filter is triggered when keyup is triggered on input[type=search] */
 
-			$('table[name=example-table]').tableFilter({
+		$('table[name=example-table]').tableFilter({
 			
-				input : "input[type=search]",
+			input : "input[type=search]",
 				
-				trigger : {
+			trigger : {
 				
-					event 	: "keyup",
-				},
+				event 	: "keyup",
+			},
 
-				sort : true, /* Add sort function */
+			sort : true, /* Add sort function */
 				
-				callback : function() {
+			callback : function() {
 	        
-	            			console.log("filter ...");
-	        		},
+	          		console.log("filter ...");
+	        	},
 
-				notFoundElement : "[name=teste]"
-			});
+			notFoundElement : "[name=teste]"
 		});
+	});
 	</code>
 </pre>
