@@ -57,8 +57,6 @@
 					if(configs.trigger.event.indexOf("key") < 0)
 						configs.timeout = 0;
 
-					console.log(configs.trigger.event);
-
 					try {
 						
 						clearTimeout($timeout);
@@ -120,16 +118,13 @@
 			var count = table.find('tbody tr').length-1;
 			
 			table.find('tbody tr').each(function(ind) {
-			
-				if($(this).find("th").length)
-					return true;
 
 				var textFound = 0;
 				var arrayText = []; // TD texts
 
 				$(this).find('td:not([data-tfilter=disabled])').each(function() {
 
-					if($(this).closest("table").find("thead th:nth-child("+($(this).parent().find("td").index($(this).get(0))+1)+")").attr("data-tfilter") == "disabled")
+					if($(this).closest("table").find("th:nth-child("+($(this).parent().find("td").index($(this).get(0))+1)+")").attr("data-tfilter") == "disabled")
 						return true;
 
 					var tdText = $(this).text().trim();
@@ -183,14 +178,14 @@
 		
 		th = $(th);
 
-		var tds 	= th.closest("table").find("td:nth-child("+(th.parent().find("th").index(th.get(0))+1)+")");
+		var tds 	= th.closest("table").find("tbody td:nth-child("+(th.parent().find("th").index(th.get(0))+1)+")");
 		var array 	= [];
 
 		/* Altera o sentido da ordenação */
 		th.filter("[data-tsort=asc]").length ? th.attr("data-tsort", "desc") : th.attr("data-tsort", "asc");
 
 		/* Altera o sentido da ordenação do ícone */
-		th.attr("data-tsort") == "asc" ? $(th).find(".caret").css("transform", "rotate(180deg)") : $(th).find(".caret").css("transform", "rotate(0deg)");
+		th.attr("data-tsort") == "asc" ? $(th).find("span.caret").css("transform", "rotate(180deg)") : $(th).find("span.caret").css("transform", "rotate(0deg)");
 		
 		/* Copia as linhas para serem ordenadas */
 		tds.each(function(a) {
@@ -198,7 +193,7 @@
 			array[array.length] = {
 				
 				text: null,
-				obj : $(this).closest("tr").clone(true, true)
+				obj : $(this).closest("tr")
 			};
 
 			var text;
@@ -224,8 +219,6 @@
 			};
 			
 			array[array.length-1]["text"] = text;
-			
-			$(this).closest("tr").remove();
 		});
 		
 		/* Ordena as linhas */
