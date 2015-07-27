@@ -4,29 +4,29 @@ Plugin jQuery para filtro e ordenação de linhas de tabelas
 See <a href="https://github.com/lenonmauer/tableFilter/tree/master/examples/">examples</a>.
 # Basic Usage
 <pre>
-	<code>
-	$(document).ready(function() {
+<code>
+$(document).ready(function() {
+	
+	/* The filter is triggered when keyup is triggered on input[type=search] */
+
+	$('table[name=example-table]').tableFilter({
 		
-		/* The filter is triggered when keyup is triggered on input[type=search] */
-
-		$('table[name=example-table]').tableFilter({
+		input : "input[type=search]",
 			
-			input : "input[type=search]",
-				
-			trigger : {
-				
-				event 	: "keyup",
-			},
+		trigger : {
+			
+			event 	: "keyup",
+		},
 
-			sort : true, /* Add sort function */
-				
-			callback : function() {
-	        
-	          		console.log("filter ...");
-	        	},
+		sort : true, /* Add sort function */
+			
+		callback : function() {
+        
+          		console.log("filter ...");
+        	},
 
-			notFoundElement : "[name=teste]"
-		});
+		notFoundElement : "[name=teste]"
 	});
-	</code>
+});
+</code>
 </pre>
