@@ -16,5 +16,5 @@
   
   "version": "1.0.1",
   
-  "main": "dist/tablefilter-1.0.1.js"
+  "main": "dist/tablefilter.min.js"
 }
