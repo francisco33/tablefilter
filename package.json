@@ -1,19 +1,20 @@
 {
   "name": "tablefilter",
-  "description": "jQuery plugin for filter and sort tables",
+  "description": "jQuery plugin for filter and sort HTML tables",
   "keywords": [
-    "zbox",
-    "lightbox"
+    "filter",
+    "table",
+	"jQuery"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/lenonmauer/tableFilter.git"
+    "url": "https://github.com/lenonmauer/tablefilter.git"
   },
   "author": {
-    "name": "Lenon Mauer.",
+    "name": "Lenon Mauer",
   },
   
-  "version": "1.1",
+  "version": "1.0.1",
   
-  "main": "dist/tablefilter.js"
+  "main": "dist/tablefilter-1.0.1.js"
 }
