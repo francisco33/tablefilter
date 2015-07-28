@@ -2,7 +2,7 @@
 	<head>
 		<link rel="stylesheet" href="../ext/css/bootstrap.min.css">
 		<script type="text/javascript" src="../ext/js/jquery.min.js"></script>
-		<script src="../dist/tablefilter-latest.js"></script>
+		<script src="../src/tablefilter.js"></script>
 	</head>
 	
 	<body>
@@ -16,9 +16,11 @@
 					
 					trigger : {
 					
-						event 	: "click",
-						element : "button[name=btn-filtro]"
+						event 	: "keyup",
+						//element : "button[name=btn-filtro]"
 					},
+
+					timeout: 200,
 
 					sort : true,
 
@@ -27,13 +29,19 @@
 					//trim      :  true, Default
 
 					callback : function() { /* Callback após o filtro */
-					
-						console.log("filter ...");
+
 					},
 					
 					notFoundElement : ".not-found"
 				});
+
+				//for(i=0;i<100;i++){
+
+					//$("table tbody").append("<tr><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td></tr>");
+				//}
 			});
+
+
 		</script>
 	
 		<div class="container">
@@ -58,6 +66,8 @@
 			
 				<div class="col-md-12">
 
+					<div class="not-found" style="display: none;">Nenhum registro encontrado.</div>
+
 					<table name="example-table" class="table table-bordered table-striped">
 
 						<thead>
@@ -66,7 +76,7 @@
 								<th data-tsort-type="date-br">Date BR</th>
 								<th data-tsort-type="date">Date</th>
 								<th>Text</th>
-								<th data-tsort="disabled">Sort Disabled</th>
+								<th data-tsort="disabled" data-tfilter="disabled">Sort and filter Disabled</th>
 							</tr>
 						</thead>
 						

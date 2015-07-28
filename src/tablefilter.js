@@ -22,15 +22,13 @@
 
 					'trigger': {
 						
-						"event" 	: "keyup", // Evento que vai chamar o a função de filtro nas tabelas
+						"event" 	: "keypress", // Evento que vai chamar o a função de filtro nas tabelas
 						'element' 	: undefined // Elemento que será aplicado o evento, undefined será o próprio input do filtro
 					},
 
-					'trim'	: true,
-
 					'caseSensitive'	:  false,
 					
-					'timeout'	: 5000, // Timeout for keyboard events (keyup, keypress ...)
+					'timeout'	: 200, // Timeout for keyboard events (keyup, keypress ...)
 					
 					'sort'	: false, // Aplica a função de ordenação das linhas
 
@@ -45,7 +43,7 @@
 				var $table = $(this);
 				var $timeout = null;
 
-				if(configs.trigger.element == undefined)
+				if(!configs.trigger.element)
 					configs.trigger.element = configs.input;
 					
 				if(!configs.trigger.element.length)
@@ -95,14 +93,12 @@
 		var toShow = [];
 
 		values = values.trim().split(" ");
-
-		if(configs.trim)
-			values = values.map(function(v){return v.trim();});
+		values = values.map(function(v){return v.trim();});
 
 		if(!configs.caseSensitive)
 			values = values.map(function(val){return val.toLowerCase();});
 
-		values.map(function(val, index){
+		values.map(function(val, index) {
 			
 			if(!val.trim().length)
 				values.splice(index, 1);
@@ -110,31 +106,33 @@
 
 		if(!values.length) {
 			
-			toShow = table.find('tbody tr').toArray();
+			toShow = table.find('tbody tr:hidden').toArray();
 
 		} else {
-			
-			var count = table.find('tbody tr').length-1;
-			
+
+			var disableds = [];
+
+			table.find('thead th').each(function(index) {
+
+				if($(this).attr("data-tfilter") == "disabled")
+					disableds.push(index);
+			});
+
 			table.find('tbody tr').each(function(ind) {
 
 				var textFound = 0;
 				var arrayText = []; // TD texts
 
-				$(this).find('td:not([data-tfilter=disabled])').each(function() {
+				$(this).find('td:not([data-tfilter=disabled])').each(function(ind) {
 
-					if($(this).closest("table").find("th:nth-child("+($(this).parent().find("td").index($(this).get(0))+1)+")").attr("data-tfilter") == "disabled")
-						return true;
+					for(var i in disableds)
+						if(disableds[i] == ind)
+							return;
 
 					var tdText = $(this).text().trim();
 
-					if(!tdText.length)
-						return true;
-					
-					if(!configs.caseSensitive)
-						tdText = tdText.toLowerCase();
-					
-					arrayText.push(tdText);
+					if(tdText.length)
+						arrayText.push(!configs.caseSensitive ? tdText.toLowerCase() : tdText);
 				});
 
 				values.forEach(function(v){
@@ -160,11 +158,19 @@
 			});
 		}
 
-		if(toShow.length)
-			toShow.push(table.get(0));
+		if(toShow.length) {
 
-		$(toShow).show(0);
-		$(toHide).hide(0);
+			if(table.is(":hidden"))
+				toShow.push(table.get(0));
+
+			$(toShow).show(0);			
+		}
+
+		if(toHide.length)
+			$(toHide).hide(0);
+
+		if(!toShow.length && !toHide.length)
+			return;
 
 		$(toShow.concat(toHide)).promise().done(function(){
 
