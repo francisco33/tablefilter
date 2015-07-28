@@ -118,15 +118,22 @@
 					disableds.push(index);
 			});
 
-			table.find('tbody tr').each(function(ind) {
+			var trs = table.find('tbody tr').toArray();
+
+			for(var i in trs) {
+
+				if(i == "length")
+					continue;
+
+				var tr = trs[i];
 
 				var textFound = 0;
 				var arrayText = []; // TD texts
 
-				$(this).find('td:not([data-tfilter=disabled])').each(function(ind) {
+				$(tr).find('td:not([data-tfilter=disabled])').each(function(ind) {
 
-					for(var i in disableds)
-						if(disableds[i] == ind)
+					for(var i2 in disableds)
+						if(disableds[i2] == ind)
 							return;
 
 					var tdText = $(this).text().trim();
@@ -151,11 +158,11 @@
 
 				textFound = textFound == values.length;
 
-				if(!textFound && $(this).is(":visible"))
-					toHide.push(this);
-				else if(textFound && $(this).is(":hidden"))
-					toShow.push(this);
-			});
+				if(!textFound && $(tr).is(":visible"))
+					toHide.push(tr);
+				else if(textFound && $(tr).is(":hidden"))
+					toShow.push(tr);
+			}
 		}
 
 		if(toShow.length) {

@@ -20,13 +20,11 @@
 						//element : "button[name=btn-filtro]"
 					},
 
-					timeout: 200,
+					timeout: 50,
 
 					sort : true,
 
 					//caseSensitive : false, Default
-					
-					//trim      :  true, Default
 
 					callback : function() { /* Callback após o filtro */
 
@@ -35,10 +33,10 @@
 					notFoundElement : ".not-found"
 				});
 
-				//for(i=0;i<100;i++){
+				for(i=0;i<100;i++){
 
-					//$("table tbody").append("<tr><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td></tr>");
-				//}
+					$("table tbody").append("<tr><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td><td>"+i+"ab</td></tr>");
+				}
 			});
 
 

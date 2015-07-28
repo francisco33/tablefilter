@@ -3,6 +3,7 @@
 Workarounds:
 
     - performance improvements
+    - Removed trim config
 
 ## 1.0.1 (1111-11-11)
 
