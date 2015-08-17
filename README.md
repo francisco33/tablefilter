@@ -22,8 +22,8 @@ $(document).ready(function() {
 			
 		callback : function() {
         
-          		console.log("filter ...");
-        	},
+          	console.log("...");
+        },
 
 		notFoundElement : "[name=teste]"
 	});
