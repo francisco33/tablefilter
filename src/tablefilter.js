@@ -22,7 +22,7 @@
 
 					'trigger': {
 						
-						"event" 	: "keypress", // Evento que vai chamar o a função de filtro nas tabelas
+						"event" 	: "keyup", // Evento que vai chamar o a função de filtro nas tabelas
 						'element' 	: undefined // Elemento que será aplicado o evento, undefined será o próprio input do filtro
 					},
 
