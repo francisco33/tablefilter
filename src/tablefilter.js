@@ -170,20 +170,17 @@
 			if(table.is(":hidden"))
 				toShow.push(table.get(0));
 
-			$(toShow).show(0);			
+			$(toShow).css("display", "");
 		}
 
 		if(toHide.length)
-			$(toHide).hide(0);
+			$(toHide).css("display", "none");
 
 		if(!toShow.length && !toHide.length)
 			return;
 
-		$(toShow.concat(toHide)).promise().done(function(){
-
-			configs.callback.call();
-			notFoundMessage(table, configs.notFoundElement);
-		});
+		configs.callback.call();
+		notFoundMessage(table, configs.notFoundElement);
 	}
 	
 	var sort = function(th) {
@@ -257,10 +254,10 @@
 		if(!notfound)
 			return;
 
-		table.find("tbody tr:visible").length ? $(notfound).hide(1) : $(notfound).show(1);
+		table.find("tbody tr:visible").length ? $(notfound).css("display", "none") : $(notfound).css("display", "none");
 
 		if(!table.find("tbody tr:visible").length)
-			$(table).hide(1);
+			$(table).css("display", "none");
 	};
 
 	$.fn.tableFilter = function(method) {
