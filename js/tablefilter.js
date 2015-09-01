@@ -1,6 +1,6 @@
 ﻿/*!
  * jQuery tablefilter Plugin - v1.0.2
- * Copyright (c) 2014 Lenon Mauer
+ * Copyright (c) 2015 Lenon Mauer
  * Version: 1.0.2 (23-JUL-2015)
  * Under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
