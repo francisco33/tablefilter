@@ -234,7 +234,6 @@
 		});
 		
 		/* Ordena as linhas */
-		
 		for(var i=0; i< array.length; i++) {
 
 			for(var i2=0; i2< array.length; i2++) {
@@ -249,7 +248,6 @@
 		}
 		
 		/* Adiciona as linhas novamente na tabela */
-		
 		for(i=0; i< array.length; i++)
 			$(th).closest("table").find("tbody").append(array[i].obj);
 	}
