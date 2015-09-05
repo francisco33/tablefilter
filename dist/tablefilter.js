@@ -1,7 +1,7 @@
 ﻿/*!
- * jQuery tableFilter Plugin - v1.0.1
- * Copyright (c) 2014 Lenon Mauer
- * Version: 1.0.1 (27-JUL-2015)
+ * jQuery tablefilter Plugin - v1.0.2
+ * Copyright (c) 2015 Lenon Mauer
+ * Version: 1.0.2 (23-JUL-2015)
  * Under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  * Requires: jQuery v1.7.2 or later
@@ -26,11 +26,9 @@
 						'element' 	: undefined // Elemento que será aplicado o evento, undefined será o próprio input do filtro
 					},
 
-					'trim'	: true,
-
 					'caseSensitive'	:  false,
 					
-					'timeout'	: 5000, // Timeout for keyboard events (keyup, keypress ...)
+					'timeout'	: -1, // Timeout for keyboard events (keyup, keypress ...)
 					
 					'sort'	: false, // Aplica a função de ordenação das linhas
 
@@ -45,11 +43,13 @@
 				var $table = $(this);
 				var $timeout = null;
 
-				if(configs.trigger.element == undefined)
+				if(!configs.trigger.element)
 					configs.trigger.element = configs.input;
 					
 				if(!configs.trigger.element.length)
 					$.error('Trigger element not found.');
+
+				configs.notFoundElement = $(configs.notFoundElement);
 
 				/* Filtro das tabelas */
 				$(configs.trigger.element).bind(configs.trigger.event, function() {
@@ -60,7 +60,7 @@
 					try {
 						
 						clearTimeout($timeout);
-						
+
 					} catch(err){}
 		
 					$timeout = setTimeout(function(){
@@ -83,7 +83,7 @@
 					});
 				}
 			});
-		},
+		}
 	}
 	
 	var filterTable = function(table, configs) {
@@ -91,19 +91,16 @@
 		var textFound;
 		var tdText;
 		var values = $(configs.input).val() || $(configs.input).text();
-		var fadeTime = 1;
 		var toHide = [];
 		var toShow = [];
 
 		values = values.trim().split(" ");
-
-		if(configs.trim)
-			values = values.map(function(v){return v.trim();});
+		values = values.map(function(v){return v.trim();});
 
 		if(!configs.caseSensitive)
 			values = values.map(function(val){return val.toLowerCase();});
 
-		values.map(function(val, index){
+		values.map(function(val, index) {
 			
 			if(!val.trim().length)
 				values.splice(index, 1);
@@ -111,31 +108,40 @@
 
 		if(!values.length) {
 			
-			toShow = table.find('tbody tr').toArray();
+			toShow = table.find('tbody tr:hidden').toArray();
 
 		} else {
-			
-			var count = table.find('tbody tr').length-1;
-			
-			table.find('tbody tr').each(function(ind) {
+
+			var disableds = [];
+
+			table.find('thead th').each(function(index) {
+
+				if($(this).attr("data-tfilter") == "disabled")
+					disableds.push(index);
+			});
+
+			var trs = table.find('tbody tr').toArray();
+
+			for(var i in trs) {
+
+				if(i == "length")
+					continue;
+
+				var tr = trs[i];
 
 				var textFound = 0;
 				var arrayText = []; // TD texts
 
-				$(this).find('td:not([data-tfilter=disabled])').each(function() {
+				$(tr).find('td:not([data-tfilter=disabled])').each(function(ind) {
 
-					if($(this).closest("table").find("th:nth-child("+($(this).parent().find("td").index($(this).get(0))+1)+")").attr("data-tfilter") == "disabled")
-						return true;
+					for(var i2 in disableds)
+						if(disableds[i2] == ind)
+							return;
 
 					var tdText = $(this).text().trim();
 
-					if(!tdText.length)
-						return true;
-					
-					if(!configs.caseSensitive)
-						tdText = tdText.toLowerCase();
-					
-					arrayText.push(tdText);
+					if(tdText.length)
+						arrayText.push(!configs.caseSensitive ? tdText.toLowerCase() : tdText);
 				});
 
 				values.forEach(function(v){
@@ -154,24 +160,29 @@
 
 				textFound = textFound == values.length;
 
-				if(!textFound && $(this).is(":visible"))
-					toHide.push(this);
-				else if(textFound && $(this).is(":hidden"))
-					toShow.push(this);
-			});
+				if(!textFound && $(tr).is(":visible"))
+					toHide.push(tr);
+				else if(textFound && $(tr).is(":hidden"))
+					toShow.push(tr);
+			}
 		}
 
-		if(toShow.length)
-			toShow.push(table.get(0));
+		if(toShow.length) {
 
-		$(toShow).show(fadeTime);
-		$(toHide).hide(fadeTime);
+			if(table.is(":hidden"))
+				toShow.push(table.get(0));
 
-		$(toShow.concat(toHide)).promise().done(function(){
+			fastShow(toShow, "show");
+		}
 
-			configs.callback.call();
-			notFoundMessage(table, configs.notFoundElement);
-		});
+		if(toHide.length)
+			fastShow(toHide, "hide");
+
+		if(!toShow.length && !toHide.length)
+			return;
+
+		configs.callback.call();
+		notFoundMessage(table, configs.notFoundElement);
 	}
 	
 	var sort = function(th) {
@@ -222,7 +233,6 @@
 		});
 		
 		/* Ordena as linhas */
-		
 		for(var i=0; i< array.length; i++) {
 
 			for(var i2=0; i2< array.length; i2++) {
@@ -237,21 +247,29 @@
 		}
 		
 		/* Adiciona as linhas novamente na tabela */
-		
 		for(i=0; i< array.length; i++)
 			$(th).closest("table").find("tbody").append(array[i].obj);
 	}
 
 	var notFoundMessage = function(table, notfound) {
 
-		if(!notfound)
+		if(!notfound.length)
 			return;
 
-		table.find("tbody tr:visible").length ? $(notfound).hide(1) : $(notfound).show(1);
-
-		if(!table.find("tbody tr:visible").length)
-			$(table).hide(1);
+		if(!table.find("tbody tr:visible").length) {
+			fastShow(notfound, "show");
+			fastShow(table, "hide");
+		} else		
+			fastShow(notfound, "hide");
 	};
+
+	var fastShow = function(array, type) {
+
+		var leng = array.length;
+
+		for(var i=0; i<leng;i++)
+			array[i].style.display = type == "show" ? "" : "none";
+	}
 
 	$.fn.tableFilter = function(method) {
 

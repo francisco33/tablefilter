@@ -83,7 +83,7 @@
 					});
 				}
 			});
-		},
+		}
 	}
 	
 	var filterTable = function(table, configs) {
