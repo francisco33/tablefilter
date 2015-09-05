@@ -28,7 +28,7 @@
 
 					'caseSensitive'	:  false,
 					
-					'timeout'	: 200, // Timeout for keyboard events (keyup, keypress ...)
+					'timeout'	: -1, // Timeout for keyboard events (keyup, keypress ...)
 					
 					'sort'	: false, // Aplica a função de ordenação das linhas
 
@@ -49,6 +49,8 @@
 				if(!configs.trigger.element.length)
 					$.error('Trigger element not found.');
 
+				configs.notFoundElement = $(configs.notFoundElement);
+
 				/* Filtro das tabelas */
 				$(configs.trigger.element).bind(configs.trigger.event, function() {
 
@@ -58,7 +60,7 @@
 					try {
 						
 						clearTimeout($timeout);
-						
+
 					} catch(err){}
 		
 					$timeout = setTimeout(function(){
@@ -170,11 +172,11 @@
 			if(table.is(":hidden"))
 				toShow.push(table.get(0));
 
-			$(toShow).css("display", "");
+			fastShow(toShow, "show");
 		}
 
 		if(toHide.length)
-			$(toHide).css("display", "none");
+			fastShow(toHide, "hide");
 
 		if(!toShow.length && !toHide.length)
 			return;
@@ -251,14 +253,23 @@
 
 	var notFoundMessage = function(table, notfound) {
 
-		if(!notfound)
+		if(!notfound.length)
 			return;
 
-		table.find("tbody tr:visible").length ? $(notfound).css("display", "none") : $(notfound).css("display", "none");
-
-		if(!table.find("tbody tr:visible").length)
-			$(table).css("display", "none");
+		if(!table.find("tbody tr:visible").length) {
+			fastShow(notfound, "show");
+			fastShow(table, "hide");
+		} else		
+			fastShow(notfound, "hide");
 	};
+
+	var fastShow = function(array, type) {
+
+		var leng = array.length;
+
+		for(var i=0; i<leng;i++)
+			array[i].style.display = type == "show" ? "" : "none";
+	}
 
 	$.fn.tableFilter = function(method) {
 
