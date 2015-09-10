@@ -65,7 +65,9 @@
 		
 					$timeout = setTimeout(function(){
 
+						console.time("filter");
 						filterTable.call(undefined, $table, configs);
+						console.timeEnd("filter");
 						
 					}, configs.timeout);
 				});
@@ -79,7 +81,9 @@
 
 					ths.css("cursor", "pointer").addClass("tfsort").bind("click", function() {
 						
+						console.time("sort");
 						sort.call(undefined, this)
+						console.timeEnd("sort");
 					});
 				}
 			});
@@ -186,70 +190,69 @@
 	}
 	
 	var sort = function(th) {
-		
-		th = $(th);
+	
+	th = $(th);
 
-		var tds 	= th.closest("table").find("tbody td:nth-child("+(th.parent().find("th").index(th.get(0))+1)+")");
-		var array 	= [];
+	var tds 	= th.closest("table").find("tbody td:nth-child("+(th.parent().find("th").index(th.get(0))+1)+")");
+	var array 	= [];
+	var tsort   = th.attr("data-tsort") == "asc" ? "desc" : "asc";
 
-		/* Altera o sentido da ordenação */
-		th.filter("[data-tsort=asc]").length ? th.attr("data-tsort", "desc") : th.attr("data-tsort", "asc");
+	tsort == "asc" ? th.attr("data-tsort", "asc").find("span.caret").css("transform", "rotate(0deg)") : th.attr("data-tsort", "desc").find("span.caret").css("transform", "rotate(180deg)");
 
-		/* Altera o sentido da ordenação do ícone */
-		th.attr("data-tsort") == "asc" ? $(th).find("span.caret").css("transform", "rotate(180deg)") : $(th).find("span.caret").css("transform", "rotate(0deg)");
-		
-		/* Copia as linhas para serem ordenadas */
-		tds.each(function(a) {
+	/* Copia as linhas para serem ordenadas */
+	tds.each(function(a) {
 
-			array[array.length] = {
-				
-				text: null,
-				obj : $(this).closest("tr")
-			};
-
-			var text;
+		array[array.length] = {
 			
-			switch(th.attr("data-tsort-type")){
-				
-				case "number" : text = parseFloat($(this).text().replace(/[,]/g, ".").replace(/[^0-9\.\-]/g, ""));break;
-				case "date" : try{text = new Date($(this).text()).getTime();}catch(err){text = 0};break;
-				
-				case "date-br" : 
-				
-					if($(this).text().match(/[0-9\/]+[\s]+[0-9]+[:]/g)) //Datetime
-						text = ($(this).text().split(" ")[0].split("/").reverse().join("-"))+" "+($(this).text().split(" ")[1]);
-					else if($(this).text().match(/[0-9]{2}[\/]{1}[0-9]{2}[\/]{1}[0-9]{4}/g))
-						text = $(this).text().split("/").reverse().join("-");
-					else
-						text = 0;
+			text: null,
+			obj : $(this).closest("tr")
+		};
 
-					text = new Date(text).getTime();
-					break;
-				
-				default : text = $(this).text().toLowerCase();
-			};
+		var text;
+		
+		switch(th.attr("data-tsort-type")){
 			
-			array[array.length-1]["text"] = text;
-		});
-		
-		/* Ordena as linhas */
-		for(var i=0; i< array.length; i++) {
+			case "number" : text = parseFloat($(this).text().replace(/[,]/g, ".").replace(/[^0-9\.\-]/g, ""));break;
+			case "date" : try{text = new Date($(this).text()).getTime();}catch(err){text = 0};break;
+			
+			case "date-br" : 
+			
+				if($(this).text().match(/[0-9\/]+[\s]+[0-9]+[:]/g)) //Datetime
+					text = ($(this).text().split(" ")[0].split("/").reverse().join("-"))+" "+($(this).text().split(" ")[1]);
+				else if($(this).text().match(/[0-9]{2}[\/]{1}[0-9]{2}[\/]{1}[0-9]{4}/g))
+					text = $(this).text().split("/").reverse().join("-");
+				else
+					text = 0;
 
-			for(var i2=0; i2< array.length; i2++) {
+				text = new Date(text).getTime();
+				break;
+			
+			default : text = $(this).text().toLowerCase();
+		};
 		
-				if((array[i].text < array[i2].text && th.attr("data-tsort") == "asc") || (array[i].text > array[i2].text && th.attr("data-tsort") == "desc")) {
-				
-					temp 		= array[i];
-					array[i] 	= array[i2];
-					array[i2] 	= temp;
-				}
+		array[array.length-1]["text"] = text;
+	});
+
+	/* Ordena as linhas */
+	for(var i=0, len1=array.length; i< len1; i++) {
+
+		for(var i2=0, len2=array.length; i2< len2; i2++) {
+	
+			if((array[i].text < array[i2].text && tsort == "asc") || (array[i].text > array[i2].text && tsort == "desc")) {
+			
+				temp 		= array[i];
+				array[i] 	= array[i2];
+				array[i2] 	= temp;
 			}
 		}
-		
-		/* Adiciona as linhas novamente na tabela */
-		for(i=0; i< array.length; i++)
-			$(th).closest("table").find("tbody").append(array[i].obj);
 	}
+
+	var tbody = $(th).closest("table").find("tbody");
+	
+	/* Adiciona as linhas novamente na tabela */
+	for(i=0, len=array.length; i< len; i++)
+		tbody.append(array[i].obj);
+}
 
 	var notFoundMessage = function(table, notfound) {
 
