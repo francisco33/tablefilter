@@ -13,8 +13,7 @@
   "author": {
     "name": "Lenon Mauer",
   },
-  
   "version": "1.0.2",
-  
+  "license": "MIT",
   "main": "dist/tablefilter.min.js"
 }
